@@ -78,7 +78,7 @@ services:
       URL: http://localhost:6881
       FORCE_HTTPS: "false"
       PGSSLMODE: disable
-      OIDC_MOCK: "true"
+      OIDC_MOCK_ENABLED: "true"
     ports:
       - "6881:3000"
     depends_on:
@@ -97,7 +97,7 @@ services:
       URL: http://localhost:6882
       FORCE_HTTPS: "false"
       PGSSLMODE: disable
-      OIDC_MOCK: "true"
+      OIDC_MOCK_ENABLED: "true"
     ports:
       - "6882:3000"
     depends_on:
