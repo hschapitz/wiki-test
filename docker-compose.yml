@@ -24,6 +24,8 @@ services:
       DB_PASSWORD: bookpass
       APP_URL: http://localhost:6871
       APP_KEY: base64:1kGUxGp+FeEz7cD0LkbZJdkqeGVkTqFvVoxb1zqGKyM=
+      APP_ENV: local
+      ALLOW_PUBLIC_REGISTRATION: "true"
     ports:
       - "6871:80"
     depends_on:
@@ -40,6 +42,8 @@ services:
       DB_PASSWORD: bookpass
       APP_URL: http://localhost:6872
       APP_KEY: base64:B8psIXt+a03CUH5dSYLzYgTUL6Hp6zPIQxC5WDTsVVk=
+      APP_ENV: local
+      ALLOW_PUBLIC_REGISTRATION: "true"
     ports:
       - "6872:80"
     depends_on:
@@ -74,6 +78,7 @@ services:
       URL: http://localhost:6881
       FORCE_HTTPS: "false"
       PGSSLMODE: disable
+      OIDC_MOCK: "true"
     ports:
       - "6881:3000"
     depends_on:
@@ -92,6 +97,7 @@ services:
       URL: http://localhost:6882
       FORCE_HTTPS: "false"
       PGSSLMODE: disable
+      OIDC_MOCK: "true"
     ports:
       - "6882:3000"
     depends_on:
