@@ -1,0 +1,152 @@
+services:
+
+  # --- BOOKSTACK ---
+  bookstack-db:
+    image: mariadb:10.6
+    container_name: bookstack-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: bookstack
+      MYSQL_USER: bookstack
+      MYSQL_PASSWORD: bookpass
+    volumes:
+      - ./bookstack/db:/var/lib/mysql
+
+  bookstack-wiki1:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack-wiki1
+    restart: unless-stopped
+    environment:
+      DB_HOST: bookstack-db
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: bookpass
+      APP_URL: http://localhost:6871
+      APP_KEY: base64:1kGUxGp+FeEz7cD0LkbZJdkqeGVkTqFvVoxb1zqGKyM=
+    ports:
+      - "6871:80"
+    depends_on:
+      - bookstack-db
+
+  bookstack-wiki2:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack-wiki2
+    restart: unless-stopped
+    environment:
+      DB_HOST: bookstack-db
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: bookpass
+      APP_URL: http://localhost:6872
+      APP_KEY: base64:B8psIXt+a03CUH5dSYLzYgTUL6Hp6zPIQxC5WDTsVVk=
+    ports:
+      - "6872:80"
+    depends_on:
+      - bookstack-db
+
+  # --- OUTLINE ---
+  outline-db:
+    image: postgres:14
+    container_name: outline-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: outline
+      POSTGRES_PASSWORD: outlinepass
+      POSTGRES_DB: outline
+    volumes:
+      - ./outline/db:/var/lib/postgresql/data
+
+  outline-redis:
+    image: redis:6
+    container_name: outline-redis
+    restart: unless-stopped
+
+  outline-wiki1:
+    image: outlinewiki/outline:latest
+    container_name: outline-wiki1
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://outline:outlinepass@outline-db:5432/outline
+      REDIS_URL: redis://outline-redis:6379
+      SECRET_KEY: 6b3f8e6713cbad06b377ceff497408d2ff8f45d88bda9be3b9cf13430c1de7a0
+      UTILS_SECRET: ffa36ad3e558ec44478a7e3d2b1658c58f8c6792f755cb1ff2e19c8b9d268201
+      URL: http://localhost:6881
+      FORCE_HTTPS: "false"
+      PGSSLMODE: disable
+    ports:
+      - "6881:3000"
+    depends_on:
+      - outline-db
+      - outline-redis
+
+  outline-wiki2:
+    image: outlinewiki/outline:latest
+    container_name: outline-wiki2
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://outline:outlinepass@outline-db:5432/outline
+      REDIS_URL: redis://outline-redis:6379
+      SECRET_KEY: b6c2ed8728fa684f13d4e777c2b57a9e361c7347f8b927d3d0295d75a94e905c
+      UTILS_SECRET: d139f52f9e7c509f064e2b6cb933b9e18213ce62f165e2c5f113db92a8c00e72
+      URL: http://localhost:6882
+      FORCE_HTTPS: "false"
+      PGSSLMODE: disable
+    ports:
+      - "6882:3000"
+    depends_on:
+      - outline-db
+      - outline-redis
+
+  # --- XWIKI ---
+  xwiki-db1:
+    image: mariadb:10.6
+    container_name: xwiki-db1
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: xwiki1
+      MYSQL_USER: xwiki1
+      MYSQL_PASSWORD: xwiki1pass
+    volumes:
+      - ./xwiki/db1:/var/lib/mysql
+
+  xwiki-db2:
+    image: mariadb:10.6
+    container_name: xwiki-db2
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: xwiki2
+      MYSQL_USER: xwiki2
+      MYSQL_PASSWORD: xwiki2pass
+    volumes:
+      - ./xwiki/db2:/var/lib/mysql
+
+  xwiki-wiki1:
+    image: xwiki:lts-mysql-tomcat
+    container_name: xwiki-wiki1
+    restart: unless-stopped
+    environment:
+      DB_USER: xwiki1
+      DB_PASSWORD: xwiki1pass
+      DB_DATABASE: xwiki1
+      DB_HOST: xwiki-db1
+    ports:
+      - "6891:8080"
+    depends_on:
+      - xwiki-db1
+
+  xwiki-wiki2:
+    image: xwiki:lts-mysql-tomcat
+    container_name: xwiki-wiki2
+    restart: unless-stopped
+    environment:
+      DB_USER: xwiki2
+      DB_PASSWORD: xwiki2pass
+      DB_DATABASE: xwiki2
+      DB_HOST: xwiki-db2
+    ports:
+      - "6892:8080"
+    depends_on:
+      - xwiki-db2
